@@ -1,0 +1,63 @@
+{
+	"name": "EmployeeDeptConditional_PipeLine",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DepartmentData",
+						"type": "DatasetReference"
+					},
+					"name": "DepartmentData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ITEmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "ITEmployees"
+				},
+				{
+					"dataset": {
+						"referenceName": "HREmployeeDataset",
+						"type": "DatasetReference"
+					},
+					"name": "HREmployeeDataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "PayrollData"
+				},
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "OtherDeptEmployees"
+				}
+			],
+			"transformations": [
+				{
+					"name": "EmployeeDeptData"
+				},
+				{
+					"name": "ConditionalSplit"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as string,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nsource(output(\n\t\tID as string,\n\t\tDepartmentName as string,\n\t\tLocation as string,\n\t\tDepartmentHead as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DepartmentData\nEmployeeDataset, DepartmentData join(DepartmentId == DepartmentData@ID,\n\tjoinType:'inner',\n\tpartitionBy('hash', 1),\n\tbroadcast: 'auto')~> EmployeeDeptData\nEmployeeDeptData split(equals(DepartmentName, 'IT'),\n\tequals(DepartmentName, 'HR'),\n\tequals(DepartmentName, 'Payroll'),\n\tdisjoint: false) ~> ConditionalSplit@(ITEmployees, HREmployees, PayrollEmployees, OtherEmployees)\nConditionalSplit@ITEmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ITEmployees'],\n\tmapColumn(\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tDepartmentName,\n\t\tDepartmentHead\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ITEmployees\nConditionalSplit@HREmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['HREmployees'],\n\tmapColumn(\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tDepartmentName,\n\t\tDepartmentHead\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HREmployeeDataset\nConditionalSplit@PayrollEmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['PayRollEmployees'],\n\tmapColumn(\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tDepartmentName,\n\t\tDepartmentHead\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> PayrollData\nConditionalSplit@OtherEmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['OtherDeptEmployees'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> OtherDeptEmployees"
+		}
+	}
+}

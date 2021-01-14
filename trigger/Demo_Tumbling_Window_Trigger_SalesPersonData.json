@@ -1,0 +1,40 @@
+{
+	"name": "Demo_Tumbling_Window_Trigger_SalesPersonData",
+	"properties": {
+		"description": "Demo_Tumbling_Window_Trigger_SalesPersonData",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipeline": {
+			"pipelineReference": {
+				"referenceName": "03 - SaelsPerson_Load_Dependent_On_DepartmentLoad",
+				"type": "PipelineReference"
+			}
+		},
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Hour",
+			"interval": 2,
+			"startTime": "2020-12-30T03:17:00Z",
+			"endTime": "2020-12-31T03:17:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": [
+				{
+					"type": "TumblingWindowTriggerDependencyReference",
+					"offset": "01:00:00",
+					"referenceTrigger": {
+						"referenceName": "Demo_Tumbling_Window_Trigger_DepartmentData",
+						"type": "TriggerReference"
+					}
+				},
+				{
+					"type": "SelfDependencyTumblingWindowTriggerReference",
+					"offset": "-01:00:00"
+				}
+			]
+		}
+	}
+}

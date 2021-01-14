@@ -1,0 +1,24 @@
+{
+	"name": "Source_DepartmentData",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedService_StorageAccount_azuredatafactoryaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "DepartmentData.txt",
+				"folderPath": "input",
+				"container": "adfdemo"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

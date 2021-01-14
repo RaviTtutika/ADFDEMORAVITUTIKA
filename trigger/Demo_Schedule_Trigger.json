@@ -1,0 +1,26 @@
+{
+	"name": "Demo_Schedule_Trigger",
+	"properties": {
+		"description": "Demo Schedule trigger which runs for every 2 hours",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "01-DemoAzureDataFacory",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 2,
+				"startTime": "2020-12-30T02:13:00Z",
+				"endTime": "2020-12-30T06:14:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

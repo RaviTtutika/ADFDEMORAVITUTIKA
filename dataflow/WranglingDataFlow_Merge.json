@@ -1,0 +1,37 @@
+{
+	"name": "WranglingDataFlow_Merge",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "EmployeeData",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  EmployeeData",
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "DepartmentData",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  DepartmentData",
+					"dataset": {
+						"referenceName": "DepartmentData",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [
+				{
+					"name": "Sink1",
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+				}
+			],
+			"script": "section Section1;\r\nshared EmployeeData = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azuredatafactoryaccount.blob.core.windows.net/dataflowdata/tblEmployeeDataset.txt\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared DepartmentData = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azuredatafactoryaccount.blob.core.windows.net/dataflowdata/tblDepartmentDataSet.txt\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]),\r\n  #\"Changed column type\" = Table.TransformColumnTypes(PromotedHeaders, {{\"ID\", Int64.Type}, {\"DepartmentName\", type text}, {\"Location\", type text}, {\"DepartmentHead\", type text}})\r\nin\r\n  #\"Changed column type\";\r\nshared UserQuery = let\r\n  Source = EmployeeData,\r\n  #\"Changed column type\" = Table.TransformColumnTypes(Source, {{\"ID\", Int64.Type}, {\"Name\", type text}, {\"Gender\", type text}, {\"Salary\", Int64.Type}, {\"DepartmentId\", Int64.Type}}),\r\n  #\"Merged queries\" = Table.NestedJoin(#\"Changed column type\", {\"DepartmentId\"}, DepartmentData, {\"ID\"}, \"DepartmentData\", JoinKind.LeftOuter),\r\n  #\"Expanded DepartmentData\" = Table.ExpandTableColumn(#\"Merged queries\", \"DepartmentData\", {\"DepartmentName\", \"DepartmentHead\"}, {\"DepartmentName\", \"DepartmentHead\"}),\r\n  #\"Grouped rows\" = Table.Group(#\"Expanded DepartmentData\", {\"DepartmentName\", \"Gender\"}, {{\"Total Employees\", each Table.RowCount(_), Int64.Type}})\r\nin\r\n  #\"Grouped rows\";\r\n"
+		}
+	}
+}

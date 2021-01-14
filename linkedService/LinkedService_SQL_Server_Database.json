@@ -1,0 +1,24 @@
+{
+	"name": "LinkedService_SQL_Server_Database",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"ServerName": {
+				"type": "string"
+			},
+			"DatabaseName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=@{linkedService().ServerName};initial catalog=@{linkedService().DatabaseName};user id=RaviTutika",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJjZTY3OGRhZC1hODY0LTRhODMtYThiMC0xMDNhMDZkMWEzZGIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "Self-Hosted-Integration-runtime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

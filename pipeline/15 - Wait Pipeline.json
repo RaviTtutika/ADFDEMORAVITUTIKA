@@ -1,0 +1,59 @@
+{
+	"name": "15 - Wait Pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute_Pipeline-Employee",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "01-DemoAzureDataFacory",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute_Pipeline_Department",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Wait_in_Seconds",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "03 - SaelsPerson_Load_Dependent_On_DepartmentLoad",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Wait_in_Seconds",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "Execute_Pipeline-Employee",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 15
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-01T07:47:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

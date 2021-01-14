@@ -1,0 +1,32 @@
+{
+	"name": "Rank_Transformation_DFT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDatawithRank"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RankDataset"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as string,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nEmployeeDataset rank(desc(Salary, true),\n\tcaseInsensitive: true,\n\toutput(Rank as long)) ~> RankDataset\nRankDataset sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['EmployeeFileWithRank'],\n\tmapColumn(\n\t\tID,\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tRankBySalary = Rank\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> EmployeeDatawithRank"
+		}
+	}
+}

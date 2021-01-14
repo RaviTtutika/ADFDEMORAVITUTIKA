@@ -1,0 +1,60 @@
+{
+	"name": "13 - MetaData_Activity",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetMetaData_Activity",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Source_EmployeeData",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Execute_PipeLine_Activity",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "GetMetaData_Activity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02 - DepartmentData_Load_Hourly",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-01T07:14:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

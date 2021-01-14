@@ -1,0 +1,32 @@
+{
+	"name": "Pivot Transformation",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "PivotedDataEmployee"
+				}
+			],
+			"transformations": [
+				{
+					"name": "PivotData"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as string,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nEmployeeDataset pivot(groupBy(DepartmentId),\n\tpivotBy(Gender),\n\t{} = count(ID),\n\tcolumnNaming: '$N$V',\n\tlateral: false) ~> PivotData\nPivotData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['PivotedEmployeeData'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> PivotedDataEmployee"
+		}
+	}
+}

@@ -1,0 +1,34 @@
+{
+	"name": "25 - DataFlowConditional_PipeLine",
+	"properties": {
+		"activities": [
+			{
+				"name": "EmployeeDeptConditional_PipeLine",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "EmployeeDeptConditional_PipeLine",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-02T13:18:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

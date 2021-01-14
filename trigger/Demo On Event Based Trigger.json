@@ -1,0 +1,27 @@
+{
+	"name": "Demo On Event Based Trigger",
+	"properties": {
+		"description": "Demo On Event Based Trigger",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "04 - Load Data using Even Grid",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/adfdemo/blobs/input/*",
+			"blobPathEndsWith": ".txt",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/5a35b983-3523-42ae-9c19-4edbfdc65ea8/resourceGroups/RG-DataFactory/providers/Microsoft.Storage/storageAccounts/azuredatafactoryaccount",
+			"events": [
+				"Microsoft.Storage.BlobCreated",
+				"Microsoft.Storage.BlobDeleted"
+			]
+		}
+	}
+}

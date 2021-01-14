@@ -1,0 +1,22 @@
+{
+	"name": "HREmployeeDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedService_StorageAccount_azuredatafactoryaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "dataflowdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

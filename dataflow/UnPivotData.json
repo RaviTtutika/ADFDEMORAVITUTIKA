@@ -1,0 +1,32 @@
+{
+	"name": "UnPivotData",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UnPivotData",
+						"type": "DatasetReference"
+					},
+					"name": "UnPivotData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "UnpivotedVendorsData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Unpivot"
+				}
+			],
+			"script": "source(output(\n\t\tPO as string,\n\t\tVendor as string,\n\t\tApple as string,\n\t\tMango as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> UnPivotData\nUnPivotData unpivot(output(\n\t\tFruits as string,\n\t\tAmount as string\n\t),\n\tungroupBy(PO,\n\t\tVendor),\n\tlateral: true,\n\tignoreNullPivots: false) ~> Unpivot\nUnpivot sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['UnPivotedVendorsData'],\n\tmapColumn(\n\t\tPO,\n\t\tVendor,\n\t\tFruits,\n\t\tAmount\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> UnpivotedVendorsData"
+		}
+	}
+}

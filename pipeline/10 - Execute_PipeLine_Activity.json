@@ -1,0 +1,43 @@
+{
+	"name": "10 - Execute_PipeLine_Activity",
+	"properties": {
+		"activities": [
+			{
+				"name": "Department_Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02 - DepartmentData_Load_Hourly",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Demo_Azure_Factory_PipeLne",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Department_Pipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "01-DemoAzureDataFacory",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-01T03:54:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

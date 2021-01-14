@@ -1,0 +1,49 @@
+{
+	"name": "NewBrach_DataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DepartmentData",
+						"type": "DatasetReference"
+					},
+					"name": "DepartmentDataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "NewBranchJoinedData"
+				},
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "AggegatedEmployeeDeptData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinedEmployeeDeptData"
+				},
+				{
+					"name": "AggregateJoinedData"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as string,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nsource(output(\n\t\tID as string,\n\t\tDepartmentName as string,\n\t\tLocation as string,\n\t\tDepartmentHead as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DepartmentDataset\nEmployeeDataset, DepartmentDataset join(DepartmentId == DepartmentDataset@ID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinedEmployeeDeptData\nJoinedEmployeeDeptData aggregate(groupBy(Gender,\n\t\tDepartmentName),\n\t{Total Employeees} = count(DepartmentName)) ~> AggregateJoinedData\nJoinedEmployeeDeptData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['NewBranchEmployeeDeptData'],\n\tmapColumn(\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tDepartmentName,\n\t\tLocation,\n\t\tDepartmentHead\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> NewBranchJoinedData\nAggregateJoinedData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AggregratedEmployeeDeptData'],\n\tmapColumn(\n\t\tGender,\n\t\tDepartmentName,\n\t\t{Total Employeees}\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AggegatedEmployeeDeptData"
+		}
+	}
+}

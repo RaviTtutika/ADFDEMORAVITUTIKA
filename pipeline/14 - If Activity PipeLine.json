@@ -1,0 +1,158 @@
+{
+	"name": "14 - If Activity PipeLine",
+	"properties": {
+		"activities": [
+			{
+				"name": "If_Conditon",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(pipeline().parameters.CopyOutPut)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "CopyData_False_Path",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "adfdemo/input/Sales.txt"
+								},
+								{
+									"name": "Destination",
+									"value": "adfdemo/@{pipeline().parameters.FalseFolder}/"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "Source_If_ActivityDataset",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Destination_If_ActivityDataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"DirectoryName": {
+											"value": "@pipeline().parameters.FalseFolder",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "CopyData_True",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "adfdemo/input/Sales.txt"
+								},
+								{
+									"name": "Destination",
+									"value": "adfdemo/@{pipeline().parameters.TrueFolder}/"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "Source_If_ActivityDataset",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Destination_If_ActivityDataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"DirectoryName": {
+											"value": "@pipeline().parameters.TrueFolder",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CopyOutPut": {
+				"type": "string",
+				"defaultValue": "True"
+			},
+			"TrueFolder": {
+				"type": "string",
+				"defaultValue": "A6"
+			},
+			"FalseFolder": {
+				"type": "string",
+				"defaultValue": "A7"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-01-01T07:37:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

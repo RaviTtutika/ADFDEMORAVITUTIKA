@@ -1,0 +1,39 @@
+{
+	"name": "Not_Exists_DataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DepartmentData",
+						"type": "DatasetReference"
+					},
+					"name": "DepartmentDataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "OutputDataset"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NotExistsCheckDataset"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as string,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nsource(output(\n\t\tID as string,\n\t\tDepartmentName as string,\n\t\tLocation as string,\n\t\tDepartmentHead as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DepartmentDataset\nEmployeeDataset, DepartmentDataset exists(DepartmentId == DepartmentDataset@ID,\n\tnegate:true,\n\tbroadcast: 'auto')~> NotExistsCheckDataset\nNotExistsCheckDataset sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['EmployeeDeptNotExistsFile'],\n\tmapColumn(\n\t\tID,\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> OutputDataset"
+		}
+	}
+}

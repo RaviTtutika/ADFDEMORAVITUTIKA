@@ -1,0 +1,34 @@
+{
+	"name": "31 - DFT_Sorted_EmployeedData",
+	"properties": {
+		"activities": [
+			{
+				"name": "Sort_Transformation",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Sort_Transformation",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-02T15:31:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

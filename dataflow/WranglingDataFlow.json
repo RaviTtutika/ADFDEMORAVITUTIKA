@@ -1,0 +1,29 @@
+{
+	"name": "WranglingDataFlow",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "EmployeeData",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~>  EmployeeData",
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [
+				{
+					"name": "Sink1",
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+				}
+			],
+			"script": "section Section1;\r\nshared EmployeeData = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azuredatafactoryaccount.blob.core.windows.net/dataflowdata/tblEmployeeDataset.txt\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = EmployeeData,\r\n  #\"Changed column type\" = Table.TransformColumnTypes(Source, {{\"ID\", Int64.Type}, {\"Name\", type text}, {\"Gender\", type text}, {\"Salary\", Int64.Type}, {\"DepartmentId\", Int64.Type}}),\r\n  #\"Filtered rows\" = Table.SelectRows(#\"Changed column type\", each [Salary] >= 4000),\r\n  #\"Filtered rows 1\" = Table.SelectRows(#\"Filtered rows\", each ([DepartmentId] <> null))\r\nin\r\n  #\"Filtered rows 1\";\r\n"
+		}
+	}
+}

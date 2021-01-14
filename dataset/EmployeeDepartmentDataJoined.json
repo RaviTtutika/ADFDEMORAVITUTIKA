@@ -1,0 +1,23 @@
+{
+	"name": "EmployeeDepartmentDataJoined",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedService_StorageAccount_azuredatafactoryaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "dataflowdata"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

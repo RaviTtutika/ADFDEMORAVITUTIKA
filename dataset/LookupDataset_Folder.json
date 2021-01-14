@@ -1,0 +1,17 @@
+{
+	"name": "LookupDataset_Folder",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linkedService_Master",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "OutputFolders"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

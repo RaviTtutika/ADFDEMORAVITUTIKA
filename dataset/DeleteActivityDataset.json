@@ -1,0 +1,19 @@
+{
+	"name": "DeleteActivityDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedService_StorageAccount_azuredatafactoryaccount",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Power BI Reports",
+				"container": "adfdemo"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

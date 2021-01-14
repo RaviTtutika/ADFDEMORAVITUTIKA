@@ -1,0 +1,64 @@
+{
+	"name": "19 - Validation_Activity_PipeLine",
+	"properties": {
+		"activities": [
+			{
+				"name": "Validation_Activity",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Source_EmployeeData",
+						"type": "DatasetReference"
+					},
+					"timeout": "7.00:00:00",
+					"sleep": 10
+				}
+			},
+			{
+				"name": "Execute Pipeline_Success",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Validation_Activity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "01-DemoAzureDataFacory",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "ExecutePipeline_Failure",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Validation_Activity",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "02 - DepartmentData_Load_Hourly",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-01-01T14:17:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

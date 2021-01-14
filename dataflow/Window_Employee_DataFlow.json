@@ -1,0 +1,32 @@
+{
+	"name": "Window_Employee_DataFlow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeData",
+						"type": "DatasetReference"
+					},
+					"name": "EmployeeDataset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DataFLowDataset",
+						"type": "DatasetReference"
+					},
+					"name": "WindowsOutputDataset"
+				}
+			],
+			"transformations": [
+				{
+					"name": "WindowDataset"
+				}
+			],
+			"script": "source(output(\n\t\tID as string,\n\t\tName as string,\n\t\tGender as string,\n\t\tSalary as integer,\n\t\tDepartmentId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmployeeDataset\nEmployeeDataset window(over(DepartmentId),\n\tasc(DepartmentId, true),\n\tAverageSalary = avg(Salary),\n\t\tRank = rank(),\n\t\tDenseRank = denseRank(),\n\t\tRowNumber = rowNumber(),\n\t\t{Total Salary} = sum(Salary)) ~> WindowDataset\nWindowDataset sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['WindowsFunctionData'],\n\tmapColumn(\n\t\tRowNumber,\n\t\tName,\n\t\tGender,\n\t\tSalary,\n\t\tDepartmentId,\n\t\tAverageSalary,\n\t\tRank,\n\t\tDenseRank,\n\t\t{Total Salary}\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> WindowsOutputDataset"
+		}
+	}
+}
